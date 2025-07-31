@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIverse — Elegant Intelligence</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" />
+  <style>
+    :root {
+      --bg-main: #f2f1ec;
+      --bg-card: #ffffff;
+      --text-main: #1b1b1b;
+      --text-secondary: #444;
+      --accent: #3e4d40;
+      --accent-hover: #2e3a30;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.75;
+      font-size: 1.1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: var(--bg-main);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.5px;
+    }
+
+    nav a {
+      margin-left: 2rem;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    .hero {
+      background-color: var(--bg-main);
+      max-width: 800px;
+      margin: 5rem auto 4rem;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .section {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      max-width: 720px;
+      margin: 4rem auto;
+      padding: 3rem 2rem;
+    }
+
+    .section h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .section p {
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    .founder {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .founder img {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+    }
+
+    .cta {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .cta a {
+      display: inline-block;
+      background-color: var(--accent);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+
+    .cta a:hover {
+      background-color: var(--accent-hover);
+    }
+
+    iframe {
+      width: 100%;
+      height: 620px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 2rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      font-size: 0.9rem;
+      color: #888;
+      border-top: 1px solid #eee;
+      margin-top: 5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">AIverse</div>
+    <nav>
+      <a href="#products">Products</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#founder">Founder</a>
+      <a href="#careers">Careers</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Crafting the Future of AI</h1>
+    <p>We create aligned, expressive, and responsible intelligence. Join us to build something meaningful.</p>
+  </section>
+
+  <section class="section" id="products">
+    <h2>Our Products</h2>
+    <p><strong>AgentOS</strong>: End-to-end agent framework for scalable deployment.</p>
+    <p><strong>FlowML</strong>: Visual workflow builder for reasoning-based automation.</p>
+    <p><strong>PromptVault</strong>: Secure prompt management with versioning and access controls.</p>
+  </section>
+
+  <section class="section" id="testimonials">
+    <h2>Testimonials</h2>
+    <p>“We built a custom GPT agent in 3 days. AIverse redefined speed and safety.”<br><em>— CTO, FintechCo</em></p>
+    <p>“PromptVault helped streamline our AI development process and improve traceability.”<br><em>— Head of ML, MedTechX</em></p>
+  </section>
+
+  <section class="section" id="founder">
+    <h2>Meet the Founder</h2>
+    <div class="founder">
+      <img src="https://i.pravatar.cc/150?img=12" alt="Founder" />
+      <h3>John Doe</h3>
+      <p>Former Google Brain researcher. Advocate for responsible autonomy.</p>
+    </div>
+  </section>
+
+  <section class="section" id="careers">
+    <h2>Careers at AIverse</h2>
+    <p>We’re looking for thoughtful engineers, researchers, and designers. If that’s you, apply below.</p>
+    <!-- <div class="cta">
+      <a href="#form">Apply Now</a>
+    </div> -->
+    <div class="cta">
+      <a href="careers-form.html">Apply Now</a>
+    </div>
+    <!-- <iframe id="form" src="careers-form.html"></iframe> -->
+  </section>
+
+  <footer>
+    &copy; 2025 AIverse. All rights reserved.
+  </footer>
+</body>
+</html>
