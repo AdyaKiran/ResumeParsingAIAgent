@@ -1,0 +1,684 @@
+{
+  "name": "Score Resume Against JD",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const resume = JSON.parse($json.resumeData);\nconst jd = JSON.parse($json.jobDescription);\n\nconst safeArray = val => Array.isArray(val) ? val.join(', ') : val || 'N/A';\n\n// const prompt = `You are a resume scoring engine. Compare the following resume against the given job description.Resume: ${resume} and Job Description: ${jd}. Give a match score (out of 10), and a short reason why this resume is a good or poor match. Return result as JSON: { \"score\": <number>, \"reason\": \"<short reason>\" }`;\n\nconst prompt = `\nYou are a resume scoring engine. Compare the following resume against the given job description. Resume: - Name: ${resume.name || 'N/A'} - Email: ${resume.email || 'N/A'} - Phone: ${resume.phone || 'N/A'} - Skills: ${safeArray(resume.skills)} - Experience: ${resume.experience || 'N/A'} - Companies: ${safeArray(resume.companies)} - Titles: ${safeArray(resume.titles)} and Job Description: - Title: ${jd.title || 'N/A'} - Required Skills: ${safeArray(jd.requiredSkills)} - Preferred Experience: ${jd.preferredExperience || 'N/A'} - Nice to Have: ${safeArray(jd.niceToHave)}. Give a match score (out of 10), and a short reason why this resume is a good or poor match. Return result as JSON: { \"score\": <number>, \"reason\": \"<short reason>\" }`;\n\nreturn [{ json: { prompt } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "33aa3414-887d-4417-8405-48189ed8f32c",
+      "name": "Build Scoring prompt"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.prompt }}"
+            },
+            {
+              "content": "You are an expert recruiter reviewing resumes. Always return a structured JSON.",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ea441fdc-793f-49ec-a5f9-7d6b96007d52",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uc63X0l3qsjrTNdX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "resumeData",
+              "type": "object"
+            },
+            {
+              "name": "jobDescription",
+              "type": "object"
+            },
+            {
+              "name": "resumeUrl"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -16,
+        144
+      ],
+      "id": "c8aeac6d-944a-42ff-b2fe-7e78f9045fe8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        864,
+        128
+      ],
+      "id": "3d2253ea-02ec-42a2-9cbb-1916af9ce387",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e9de53c-7148-4ba2-a127-5ef9d9935a4f",
+              "name": "score",
+              "value": "={{$json.message.content.score}}",
+              "type": "string"
+            },
+            {
+              "id": "d2aa2b5b-1691-4d31-8cdb-29ddf50c0c46",
+              "name": "reason",
+              "value": "={{$json.message.content.reason}}",
+              "type": "string"
+            },
+            {
+              "id": "4559c6b7-0423-4c8a-8195-fc017c80775f",
+              "name": "resumeData1",
+              "value": "={{ JSON.parse($json.resumeData); }}",
+              "type": "string"
+            },
+            {
+              "id": "7d73626d-25b1-498f-bfb8-f07fe0421f39",
+              "name": "jobdescription1",
+              "value": "={{ JSON.parse($json.jobDescription); }}",
+              "type": "string"
+            },
+            {
+              "id": "fe69566c-1c71-42e9-a3e9-cb422fdac33c",
+              "name": "score1",
+              "value": "={{ parseInt($json.message.content.score, 10) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        128
+      ],
+      "id": "12af6bde-0feb-4035-86f1-b702ebd61f4f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "112fXeUf1FqbX-ylGC_lIAh-_fROpaXDEfaE8AIvzHM8",
+          "mode": "list",
+          "cachedResultName": "Resume Submissions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/112fXeUf1FqbX-ylGC_lIAh-_fROpaXDEfaE8AIvzHM8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/112fXeUf1FqbX-ylGC_lIAh-_fROpaXDEfaE8AIvzHM8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Resume PDF URL": "={{ $json.resumeUrl }}",
+            "Score": "={{ $json.score }}",
+            "Reason": "={{ $json.reason }}",
+            "Job ID": "={{ JSON.parse($json.jobDescription).title }}",
+            "Phone": "={{ JSON.parse($json.resumeData).phone }}",
+            "Email": "={{ JSON.parse($json.resumeData).email }}",
+            "Candidate Name": "={{ JSON.parse($json.resumeData).name }}",
+            "Timestamp": "={{new Date().toISOString()}}",
+            "Email Status": "Calendly Link Sent"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate Name",
+              "displayName": "Candidate Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job ID",
+              "displayName": "Job ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resume PDF URL",
+              "displayName": "Resume PDF URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2384,
+        -128
+      ],
+      "id": "f4526ba2-4a59-44e2-bbb6-80b2f10216e2",
+      "name": "Append row in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oiCQwZnl5G3AKBzO",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "75f49bda-aa2d-40ed-9145-b97eec1fa378",
+              "leftValue": "={{$json[\"score1\"]}}",
+              "rightValue": 6,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        128
+      ],
+      "id": "61a4f092-91ab-4847-a863-680bbf366c61",
+      "name": "If",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "112fXeUf1FqbX-ylGC_lIAh-_fROpaXDEfaE8AIvzHM8",
+          "mode": "list",
+          "cachedResultName": "Resume Submissions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/112fXeUf1FqbX-ylGC_lIAh-_fROpaXDEfaE8AIvzHM8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/112fXeUf1FqbX-ylGC_lIAh-_fROpaXDEfaE8AIvzHM8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Resume PDF URL": "={{ $json.resumeUrl }}",
+            "Score": "={{ $json.score }}",
+            "Reason": "={{ $json.reason }}",
+            "Job ID": "={{ JSON.parse($json.jobDescription).title }}",
+            "Phone": "={{ JSON.parse($json.resumeData).phone }}",
+            "Email": "={{ JSON.parse($json.resumeData).email }}",
+            "Candidate Name": "={{ JSON.parse($json.resumeData).name }}",
+            "Timestamp": "={{new Date().toISOString()}}",
+            "Email Status": "Application comfirmation sent. Review CV. "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate Name",
+              "displayName": "Candidate Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job ID",
+              "displayName": "Job ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resume PDF URL",
+              "displayName": "Resume PDF URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Status",
+              "displayName": "Email Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2576,
+        256
+      ],
+      "id": "e62a16a3-3179-4026-a8a6-13f0792c72d1",
+      "name": "Append row in sheet1",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oiCQwZnl5G3AKBzO",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "agentica8@gmail.com",
+        "toEmail": "adyakiran@gmail.com",
+        "subject": "Interview Opportunity at AIverse",
+        "html": "=Hi {{ JSON.parse($json.resumeData).name }},<br>\nWe loved your profile and would love to schedule an interview with you for the {{ JSON.parse($json.jobDescription).title }} role. <br>\nPlease reply to this email with your availability for an interview slot between <strong>Monday to Friday, 9:00 AM – 4:00 PM IST</strong>, within the next <strong>2 weeks</strong>. Use the link here - https://calendly.com/agentica8/30min </p>\n<br><br>\nWe'll reach out with further steps shortly.\n<br>\nWarm regards,<br>\nThe AIverse Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        -144
+      ],
+      "id": "bb4043e8-a507-4406-96e2-0f3c4b0add88",
+      "name": "Send email",
+      "webhookId": "f7538e8e-c1a3-4f5b-8b54-d94dc2bbc180",
+      "alwaysOutputData": false,
+      "credentials": {
+        "smtp": {
+          "id": "cTqsqT1YEoTONPkR",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "agentica8@gmail.com",
+        "toEmail": "adyakiran@gmail.com",
+        "subject": "Interview Opportunity at AIverse",
+        "html": "=Hi {{ JSON.parse($json.resumeData).name }},<br>\nThank you for your interest in the {{ JSON.parse($json.jobDescription).title }} role. <br>\nWe will review your application and get back to you shortly.\n<br><br>\nWe'll reach out with further steps shortly.\n<br>\nWarm regards,<br>\nThe AIverse Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1888,
+        256
+      ],
+      "id": "3b522ff7-59f8-47b7-8fe8-5e0762afb13e",
+      "name": "Send email1",
+      "webhookId": "f7538e8e-c1a3-4f5b-8b54-d94dc2bbc180",
+      "credentials": {
+        "smtp": {
+          "id": "cTqsqT1YEoTONPkR",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2096,
+        -128
+      ],
+      "id": "6a83183c-e0ca-498d-9798-0e8d0f842b5e",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2336,
+        240
+      ],
+      "id": "04f27a60-c24a-430c-aaa4-5419a7621ba2",
+      "name": "Merge2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Build Scoring prompt": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Build Scoring prompt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send email1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6a40d577-cbfb-4870-8dd4-32be3e215f58",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d1ceaa89375d12cfbf29516594805b486b6ef61d5143bbffec304899c1ffd6bf"
+  },
+  "id": "sC7oiZJKbJJnmrff",
+  "tags": []
+}
